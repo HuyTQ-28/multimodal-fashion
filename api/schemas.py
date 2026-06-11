@@ -1,54 +1,53 @@
-"""Pydantic schemas for API requests and responses."""
+"""Pydantic schemas for FREEDOM-RT API requests and responses."""
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 
-InteractionType = Literal["click", "like", "cart"]
+InteractionType = Literal["click", "like", "add_to_cart"]
 
 
 class InteractionRequest(BaseModel):
-    """Payload for a user-product interaction."""
+    """Payload for intent-aware preference updates."""
 
+    session_id: str = Field(..., min_length=1)
+    article_id: str = Field(..., min_length=1)
+    action_type: InteractionType
+
+
+class InteractionResponse(BaseModel):
+    """Response after persisting a session EMA update."""
+
+    status: str
     session_id: str
-    product_id: str
-    interaction_type: InteractionType
-    product_vector: list[float] = Field(..., min_length=128, max_length=128)
-
-
-class RecommendationRequest(BaseModel):
-    """Payload for personalized K-NN recommendations."""
-
-    session_id: str
-    limit: int = Field(default=20, ge=1, le=100)
-
-
-class HybridSearchRequest(BaseModel):
-    """Payload for hybrid text and vector search."""
-
-    query: str
-    session_id: str | None = None
-    query_vector: list[float] | None = Field(default=None, min_length=128, max_length=128)
-    limit: int = Field(default=20, ge=1, le=100)
+    article_id: str
+    action_type: InteractionType
+    vector_dim: int
 
 
 class ColdStartProductRequest(BaseModel):
-    """Payload for inserting a cold-start fashion product."""
+    """Payload for inserting a new product with runtime embeddings."""
 
-    product_id: str
-    title: str
-    description: str | None = None
-    image_url: str | None = None
-    feature_vector: list[float] = Field(..., min_length=128, max_length=128)
+    article_id: str = Field(..., min_length=1)
+    image_url: HttpUrl
+    prod_name: str = ""
+    detail_desc: str = ""
+    product_type_name: str = ""
+    colour_group_name: str = ""
+    graphical_appearance_name: str = ""
+    index_name: str = ""
 
 
 class ProductResponse(BaseModel):
-    """Product recommendation response."""
+    """Standard product response returned by recommendation/search endpoints."""
 
-    product_id: str
-    title: str | None = None
-    image_url: str | None = None
+    article_id: str
+    image_url: str = ""
+    prod_name: str = ""
+    detail_desc: str = ""
+    product_type_name: str = ""
+    colour_group_name: str = ""
+    graphical_appearance_name: str = ""
+    index_name: str = ""
     score: float | None = None
-    metadata: dict[str, str | int | float | bool | None] | None = None
-

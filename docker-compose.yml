@@ -2,22 +2,35 @@ services:
   redis:
     image: redis:7-alpine
     container_name: freedom_rt_redis
+    command: redis-server --appendonly yes
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   api:
     build: .
     container_name: freedom_rt_api
     env_file:
       - .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      WEAVIATE_COLLECTION: FashionItem
+      CATALOG_VECTORS_PATH: /app/dataset/saved/teacher_item_128.npy
+      STUDENT_MLP_PATH: /app/dataset/saved/student_mlp.pth
     ports:
       - "8000:8000"
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./dataset:/app/dataset:ro
     command: uvicorn api.main:app --host 0.0.0.0 --port 8000
 
 volumes:
   redis_data:
-
