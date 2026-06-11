@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+redis
+weaviate-client
+torch
+numpy
+pandas
+cloudinary
+modal
