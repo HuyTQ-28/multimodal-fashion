@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     app_name: str = "FREEDOM-RT"
     app_env: str = "development"
     log_level: str = "INFO"
+    cors_origins: list[str] = Field(
+        default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"]
+    )
     redis_url: str = "redis://localhost:6379/0"
     redis_session_ttl_seconds: int = 604800
     weaviate_url: str = ""

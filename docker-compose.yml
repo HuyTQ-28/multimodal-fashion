@@ -20,6 +20,7 @@ services:
       - .env
     environment:
       REDIS_URL: redis://redis:6379/0
+      CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000"]'
       WEAVIATE_COLLECTION: FashionItem
       CATALOG_VECTORS_PATH: /app/dataset/saved/teacher_item_128.npy
       STUDENT_MLP_PATH: /app/dataset/saved/student_mlp.pth

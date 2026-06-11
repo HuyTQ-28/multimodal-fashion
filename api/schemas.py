@@ -1,6 +1,7 @@
 """Pydantic schemas for FREEDOM-RT API requests and responses."""
 
 from typing import Literal
+from uuid import uuid4
 
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -29,7 +30,7 @@ class InteractionResponse(BaseModel):
 class ColdStartProductRequest(BaseModel):
     """Payload for inserting a new product with runtime embeddings."""
 
-    article_id: str = Field(..., min_length=1)
+    article_id: str = Field(default_factory=lambda: f"frt_{uuid4().hex}", min_length=1)
     image_url: HttpUrl
     prod_name: str = ""
     detail_desc: str = ""
